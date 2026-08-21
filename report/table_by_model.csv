@@ -1,0 +1,5 @@
+﻿defense,model,n,ac,mislead,pass_rate,mislead_rate,order
+P0,codebuddy-glm,8,8,0,100.0,0.0,0
+P1,codebuddy-glm,8,8,0,100.0,0.0,1
+P2,codebuddy-glm,16,16,0,100.0,0.0,2
+P3,codebuddy-glm,16,16,0,100.0,0.0,3
