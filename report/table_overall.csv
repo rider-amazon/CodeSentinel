@@ -1,5 +1,0 @@
-﻿defense,n,ac,mislead,avg_elapsed,pass_rate,mislead_rate,defense_name,order
-P0,8,8,0,0,100.0,0.0,P0 原始基线,0
-P1,8,8,0,0,100.0,0.0,P1 同构多版本,1
-P2,16,16,0,0,100.0,0.0,P2 信息扰动,2
-P3,16,16,0,0,100.0,0.0,P3 组合防护,3
