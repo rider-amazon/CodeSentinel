@@ -9,6 +9,7 @@
   python start.py --analyze           对已有实验数据生成统计与图表
 """
 import argparse
+import os
 import subprocess
 import sys
 import webbrowser
@@ -26,9 +27,14 @@ def ensure_env():
     print("[setup] 未找到虚拟环境，创建中…")
     subprocess.check_call([sys.executable, "-m", "venv", str(ROOT / ".venv")])
     print("[setup] 安装依赖…")
+    # Windows 下 pip 默认用系统代码页(GBK)解码 requirements.txt，
+    # 若文件含非 ASCII 字符会报 UnicodeDecodeError；强制 UTF-8 读取。
+    env = dict(os.environ)
+    env["PYTHONUTF8"] = "1"
     subprocess.check_call([str(VENV_PY), "-m", "pip", "install", "-r",
                            str(ROOT / "requirements.txt"),
-                           "-i", "https://pypi.tuna.tsinghua.edu.cn/simple"])
+                           "-i", "https://pypi.tuna.tsinghua.edu.cn/simple"],
+                          env=env)
     return str(VENV_PY)
 
 
