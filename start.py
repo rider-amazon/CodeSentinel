@@ -25,7 +25,10 @@ def ensure_env():
     if VENV_PY.exists():
         return str(VENV_PY)
     print("[setup] 未找到虚拟环境，创建中…")
-    subprocess.check_call([sys.executable, "-m", "venv", str(ROOT / ".venv")])
+    subprocess.check_call(
+        [sys.executable, "-m", "venv", str(ROOT / ".venv")],
+        cwd=ROOT,
+    )
     print("[setup] 安装依赖…")
     # Windows 下 pip 默认用系统代码页(GBK)解码 requirements.txt，
     # 若文件含非 ASCII 字符会报 UnicodeDecodeError；强制 UTF-8 读取。
@@ -34,7 +37,7 @@ def ensure_env():
     subprocess.check_call([str(VENV_PY), "-m", "pip", "install", "-r",
                            str(ROOT / "requirements.txt"),
                            "-i", "https://pypi.tuna.tsinghua.edu.cn/simple"],
-                          env=env)
+                          env=env, cwd=ROOT)
     return str(VENV_PY)
 
 
@@ -42,7 +45,10 @@ def ensure_problems(py):
     out = ROOT / "server" / "problems"
     if not out.exists() or not list(out.glob("P*.json")):
         print("[setup] 生成题库…")
-        subprocess.check_call([py, "-X", "utf8", str(ROOT / "tools" / "build_problems.py")])
+        subprocess.check_call(
+            [py, "-X", "utf8", str(ROOT / "tools" / "build_problems.py")],
+            cwd=ROOT,
+        )
 
 
 def main():
@@ -58,16 +64,22 @@ def main():
 
     py = ensure_env()
     if args.rebuild_problems:
-        subprocess.check_call([py, "-X", "utf8", str(ROOT / "tools" / "build_problems.py")])
+        subprocess.check_call(
+            [py, "-X", "utf8", str(ROOT / "tools" / "build_problems.py")],
+            cwd=ROOT,
+        )
         return
     ensure_problems(py)
 
     if args.mock_experiment:
         subprocess.check_call([py, "-X", "utf8", str(ROOT / "experiment" / "run_experiment.py"),
-                               "--mock"])
+                               "--mock"], cwd=ROOT)
         return
     if args.analyze:
-        subprocess.check_call([py, "-X", "utf8", str(ROOT / "experiment" / "analyze.py")])
+        subprocess.check_call(
+            [py, "-X", "utf8", str(ROOT / "experiment" / "analyze.py")],
+            cwd=ROOT,
+        )
         return
 
     url = "http://127.0.0.1:%d" % args.port
@@ -77,7 +89,7 @@ def main():
     subprocess.check_call([
         py, "-X", "utf8", "-m", "uvicorn", "server.app:app",
         "--host", "127.0.0.1", "--port", str(args.port),
-    ])
+    ], cwd=ROOT)
 
 
 if __name__ == "__main__":
