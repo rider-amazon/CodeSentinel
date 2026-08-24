@@ -5,6 +5,7 @@
 - C++：若本机存在 g++ 则编译运行，否则返回不可用提示（降级）；
 - 输出比对：忽略每行行尾空白与文末空行。
 """
+import os
 import shutil
 import subprocess
 import sys
@@ -84,17 +85,51 @@ def judge_python(code, tests, time_limit_ms):
     return _result(overall, detail, "", passed)
 
 
-def judge_cpp(code, tests, time_limit_ms):
+# 常见安装路径（PATH 未生效时回退查找）
+_CPP_COMPILER_FALLBACKS = [
+    r"C:\mingw64\bin\g++.exe",
+    r"C:\msys64\mingw64\bin\g++.exe",
+    r"C:\Program Files\mingw-w64\x86_64-*\bin\g++.exe",  # 通配
+]
+
+
+def _find_cpp_compiler():
     gpp = shutil.which("g++") or shutil.which("clang++") or shutil.which("g++.exe")
+    if gpp:
+        return gpp
+    import glob
+    for cand in _CPP_COMPILER_FALLBACKS:
+        if "*" in cand:
+            matches = glob.glob(cand)
+            if matches:
+                return matches[0]
+        elif Path(cand).exists():
+            return cand
+    return None
+
+
+def _cpp_runtime_env():
+    """构造运行时环境变量，确保 mingw64 的 DLL（libstdc++ 等）可被找到。"""
+    gpp = _find_cpp_compiler()
+    bin_dir = str(Path(gpp).parent) if gpp else ""
+    env = dict(os.environ)
+    if bin_dir and bin_dir.lower() not in env.get("PATH", "").lower():
+        env["PATH"] = bin_dir + ";" + env.get("PATH", "")
+    return env
+
+
+def judge_cpp(code, tests, time_limit_ms):
+    gpp = _find_cpp_compiler()
     if not gpp:
         return _result("CE", [], "本机未检测到 g++ 编译器，演示环境请使用 Python3 提交")
+    run_env = _cpp_runtime_env()
     with tempfile.TemporaryDirectory(prefix="oj_judge_") as td:
         src = Path(td) / "main.cpp"
         src.write_text(code, encoding="utf-8")
         exe = Path(td) / ("main.exe" if sys.platform == "win32" else "main")
         try:
             r = subprocess.run([gpp, "-O2", "-std=c++14", "-o", str(exe), str(src)],
-                               capture_output=True, timeout=30)
+                               capture_output=True, timeout=30, env=run_env)
         except subprocess.TimeoutExpired:
             return _result("CE", [], "编译超时")
         if r.returncode != 0:
@@ -102,7 +137,7 @@ def judge_cpp(code, tests, time_limit_ms):
 
         detail, overall = [], "AC"
         for t in tests:
-            verdict, ms, out, err = _run_exe(exe, t["input"], time_limit_ms)
+            verdict, ms, out, err = _run_exe(exe, t["input"], time_limit_ms, run_env)
             if verdict == "OK":
                 verdict = "AC" if normalize(out) == normalize(t["output"]) else "WA"
             if verdict != "AC" and overall == "AC":
@@ -112,12 +147,13 @@ def judge_cpp(code, tests, time_limit_ms):
     return _result(overall, detail, "", passed)
 
 
-def _run_exe(exe, stdin_text, time_limit_ms):
+def _run_exe(exe, stdin_text, time_limit_ms, env=None):
     timeout = time_limit_ms / 1000.0 + STARTUP_ALLOWANCE
     t0 = time.time()
     try:
         r = subprocess.run([str(exe)], input=stdin_text.encode("utf-8"),
-                           capture_output=True, timeout=timeout, cwd=str(exe.parent))
+                           capture_output=True, timeout=timeout, cwd=str(exe.parent),
+                           env=env)
     except subprocess.TimeoutExpired:
         return "TLE", int((time.time() - t0) * 1000), "", ""
     elapsed = int((time.time() - t0) * 1000)
