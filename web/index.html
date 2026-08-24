@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>题目列表 - OJ-Anti-AI</title>
-<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="static/style.css?v=1787541673">
 </head>
 <body>
 <div class="container">
@@ -25,12 +25,12 @@
     </table>
   </div>
 </div>
-<script src="static/common.js?v=23"></script>
+<script src="static/common.js?v=1787541673"></script>
 <script>
 renderNav("problems");
 (async () => {
   const data = await App.api("/api/problems");
-  const ps = data.problems;
+  const ps = Array.isArray(data.problems) ? data.problems : [];
   document.getElementById("stat").innerHTML =
     `共 <b>${ps.length}</b> 道自拟题目 · 每题 <b>3</b> 个同构版本 · 防护状态 P0 / P1 / P2 / P3`;
   document.getElementById("rows").innerHTML = ps.map(p => `
