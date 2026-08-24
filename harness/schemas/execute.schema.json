@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Execute",
+  "type": "object",
+  "required": ["task", "changes"],
+  "properties": {
+    "task": {"type": "string"},
+    "changes": {
+      "type": "array",
+      "description": "实际改动文件列表，含是否在计划范围内的标记",
+      "items": {
+        "type": "object",
+        "required": ["path", "in_plan"],
+        "properties": {
+          "path": {"type": "string"},
+          "detail": {"type": "string"},
+          "in_plan": {
+            "type": "boolean",
+            "description": "是否落在计划 changes 范围内"
+          }
+        }
+      }
+    },
+    "deviation": {"type": "string"},
+    "self_test": {"type": "array", "items": {"type": "string"}},
+    "result": {
+      "type": "string",
+      "enum": ["pass", "warn", "fail"]
+    }
+  }
+}

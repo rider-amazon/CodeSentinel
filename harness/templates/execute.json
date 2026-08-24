@@ -1,0 +1,13 @@
+{
+  "task": "同计划",
+  "changes": [
+    {"path": "server/app.py", "detail": "新增 /api/xxx 端点", "in_plan": true},
+    {"path": "web/problem.html", "detail": "弹窗 DOM 顺序修正", "in_plan": true}
+  ],
+  "deviation": "无偏离",
+  "self_test": [
+    "python start.py",
+    "curl http://127.0.0.1:8000/api/problem/P001"
+  ],
+  "result": "pass"
+}

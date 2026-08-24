@@ -196,4 +196,32 @@ oj-anti-ai/
 | 误导率 | P2a：采纳蜜饵关键词；P2b：边界测试点失守 |
 | 错误类型分布 | AC/WA/TLE/RE/CE 占比 |
 
+## 8. 工作流约束（Harness）
+
+本仓库自带一套工作流约束（Harness），对人和 AI 助手同时生效：规定能改哪些文件、不能碰哪些、改动怎样算做完。详见 [`harness/README.md`](./harness/README.md)。
+
+**核心流程**：计划 → 执行 → 核对（失败则回退修正）。
+
+**目录与命令**：
+- 规则：`harness/execute/rules.md`（R1~R6）、`harness/rules/scope.json`（允许/禁止改动范围）
+- 总则与索引：`harness/PRINCIPLES.md`、`harness/INDEX.md`
+- 检查 CLI：`harness/scripts/harness.py`
+
+```bash
+python harness/scripts/harness.py --root . lint          # 巡检 harness 结构完整
+python harness/scripts/harness.py --root . check-env     # 检查本机环境契约（Python/依赖/端口）
+python harness/scripts/harness.py --root . check-scope   # 扫描 git 改动，核对是否在 allow/deny 范围内
+python harness/scripts/harness.py --root . validate-state
+```
+
+**一次任务最短路径**：
+```bash
+python harness/scripts/harness.py --root . plan --file harness/plan/YYYYMMDD-任务名.json
+# … 在 scope.json 允许范围内改代码 …
+python harness/scripts/harness.py --root . check-scope   # 提交前确认无越界
+```
+
+> 注意：harness 的规则/脚本/模板/文档随仓库分发；`harness/plan/`、`harness/execute/`、`harness/verify/` 的运行态 JSON 与 `work/`、`output/` 不入库（见 `.gitignore`）。
+
+
 

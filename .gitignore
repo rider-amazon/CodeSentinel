@@ -45,3 +45,21 @@ _*.py
 .DS_Store
 # Windows 资源管理器生成的缩略图缓存文件
 Thumbs.db
+
+# ============================================================
+# 工作流约束（Harness）：规则/脚本/模板/文档入库；运行态产物不入库
+# ============================================================
+# Harness 是本项目的约束套件（计划→执行→核对），对人与 AI 同时生效，需随仓库分发。
+# 入库部分：PRINCIPLES.md、INDEX.md、README.md、execute/rules.md、execute/scope.md、
+#          verify/checklist.md、schemas/、rules/、templates/、scripts/、tests/、各 _template.md
+# 仅忽略运行态生成物（计划/执行/核对记录、会话状态、自测输出）：
+harness/plan/*.json
+harness/execute/*.json
+harness/verify/*.json
+harness/work/
+harness/output/
+
+# macOS 生成的隐藏文件
+.DS_Store
+# Windows 资源管理器生成的缩略图缓存文件
+Thumbs.db
