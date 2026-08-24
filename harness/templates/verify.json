@@ -1,0 +1,10 @@
+{
+  "task": "同计划",
+  "checks": [
+    {"id": "1", "desc": "服务能启动", "result": "pass"},
+    {"id": "5", "desc": "Python3 判题 AC", "result": "pass"},
+    {"id": "21", "desc": "Python 语法检查通过", "result": "pass"},
+    {"id": "18", "desc": ".gitignore 覆盖敏感文件", "result": "pass"}
+  ],
+  "conclusion": "pass"
+}

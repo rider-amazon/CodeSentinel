@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verify",
+  "type": "object",
+  "required": ["task", "checks"],
+  "properties": {
+    "task": {"type": "string"},
+    "checks": {
+      "type": "array",
+      "description": "自测检查项结果",
+      "items": {
+        "type": "object",
+        "required": ["id", "result"],
+        "properties": {
+          "id": {"type": "string"},
+          "desc": {"type": "string"},
+          "result": {
+            "type": "string",
+            "enum": ["pass", "fail", "skip"]
+          },
+          "note": {"type": "string"}
+        }
+      }
+    },
+    "conclusion": {
+      "type": "string",
+      "enum": ["pass", "warn", "fail"]
+    }
+  }
+}

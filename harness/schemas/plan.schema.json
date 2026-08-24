@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plan",
+  "type": "object",
+  "required": ["task", "changes", "acceptance"],
+  "properties": {
+    "task": {
+      "type": "string",
+      "description": "本次任务一句话描述"
+    },
+    "changes": {
+      "type": "array",
+      "description": "改动范围：计划内允许修改的文件列表",
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": {"type": "string"},
+          "expect": {"type": "string"},
+          "no_change_reason": {"type": "string"}
+        }
+      }
+    },
+    "acceptance": {
+      "type": "array",
+      "description": "验收标准列表（可观测、可验证）",
+      "items": {"type": "string"}
+    },
+    "self_test": {
+      "type": "array",
+      "description": "自测命令列表",
+      "items": {"type": "string"}
+    },
+    "gap_ref": {
+      "type": "string",
+      "description": "关联差距清单条目标识"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "task": "一句话描述本次任务",
+  "changes": [
+    {"path": "server/app.py", "expect": "新增 xxx 接口"},
+    {"path": "web/problem.html", "expect": "修复弹窗 DOM 顺序"},
+    {"path": "server/store.py", "no_change_reason": "本次不涉及数据层"}
+  ],
+  "acceptance": [
+    "预期现象 1：服务启动无报错",
+    "预期现象 2：/api/problem/P001 返回含 statement_tree"
+  ],
+  "self_test": [
+    "python start.py",
+    "python -m py_compile server/app.py"
+  ],
+  "gap_ref": "#2"
+}
