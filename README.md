@@ -23,7 +23,7 @@
 cd oj-anti-ai
 
 # 一键创建虚拟环境并安装所有依赖
-python start.py
+python start.py          # Windows / 多数环境；Linux/macOS 若只有 python3 命令则改用 python3 start.py
 ```
 
 首次运行 `start.py` 会自动：
