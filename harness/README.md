@@ -36,10 +36,9 @@ harness/
 │   ├── execute.json
 │   └── verify.json
 ├── tests/
-│   └── test_harness.py    # 回归测试（python -m unittest）
+│   └── test_harness.py    # harness 自身回归测试（python -m unittest）
 ├── output/                # 自测输出（日志/截图/报告），不入库
 └── README.md              # 本说明文件
-└── output/                # 自测输出（日志/截图/报告），不入库
 ```
 
 ---
@@ -80,6 +79,8 @@ harness/
 运行自测；对照预期；**失败则带着报错与现象回到计划**，收紧范围或改写验收标准后再试。
 
 入口：`verify/checklist.md`（逐项打勾）+ `verify/_template.md`（记录结果）。
+
+> **harness 的边界**：`lint`/`check-env`/`check-scope` 管的是"结构/环境/改动范围"，**查不出业务逻辑正确性**（例如函数对边界输入是否漏处理）。这类问题要靠**回归测试**补位——见末尾「回归测试」一节。
 
 ---
 
@@ -145,6 +146,22 @@ python harness/scripts/harness.py --root . validate-state
 
 ## 回归测试
 
+harness 自身的结构/范围检查（lint/check-scope）无法发现**业务逻辑正确性**问题（如某函数对单行输入漏注入、对空值崩）。这类盲点由专门的回归测试覆盖。
+
+### 1) harness 自身回归
+
 ```bash
 python -m unittest discover -s harness/tests -p "test_*.py" -v
 ```
+
+### 2) 业务回归（补 harness 盲点）
+
+针对"harness 查不出、但会破坏功能"的逻辑，落在本仓库各模块的 `tests/` 目录，提交前或 CI 应一并跑：
+
+```bash
+# AI 干扰行注入：多行/单行/空文本/全链路 prompt 含干扰行（堵住 _inject_ai_hint_lines 边界 bug）
+python -m unittest experiment.tests.test_ai_hint_injection -v
+#   运行结果：Ran 7 tests — OK
+```
+
+> 约定：新增功能若在通检/排错中发现"harness 没拦住"的逻辑缺陷，应顺手把对应断言固化成 `*/tests/test_*.py`，让 CI 自动捕获同类回归。
